@@ -87,9 +87,6 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
-  <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/../../telstra/big-data-cxp/metastore/database/metastore_ddl.sql" dialect="PostgreSQL" />
-  </component>
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>

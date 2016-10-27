@@ -39,6 +39,10 @@ public class FeatureType extends AuditedModel implements Searchable {
     @JoinColumn(name="value_type_id")
     private ValueType valueType;
 
+    @ManyToOne
+    @JoinColumn(name="data_type_id")
+    private DataType dataType;
+
     private String columnName;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -142,6 +146,14 @@ public class FeatureType extends AuditedModel implements Searchable {
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+    }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
     }
 
     public String getColumnName() {
@@ -252,6 +264,26 @@ public class FeatureType extends AuditedModel implements Searchable {
         }
     }
 
+    public String getFeatureFamiliesName() {
+        if (featureFamilies == null) {
+            return null;
+        }
+        int n = featureFamilies.size();
+        String[] names = new String[n];
+        for (int i = 0; i < n; i++) {
+            names[i] = featureFamilies.get(i).getName();
+        }
+        if (n == 0) {
+            return null;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String name : names) {
+                sb.append(name).append(',');
+            }
+            return sb.substring(0, sb.length() - 1);
+        }
+    }
+
     public List<Tag> getTags() {
         return tags;
     }
@@ -275,6 +307,26 @@ public class FeatureType extends AuditedModel implements Searchable {
             StringBuilder sb = new StringBuilder();
             for (String id : ids) {
                 sb.append(id).append(',');
+            }
+            return sb.substring(0, sb.length() - 1);
+        }
+    }
+
+    public String getTagsName() {
+        if (tags == null) {
+            return null;
+        }
+        int n = tags.size();
+        String[] names = new String[n];
+        for (int i = 0; i < n; i++) {
+            names[i] = tags.get(i).getName();
+        }
+        if (n == 0) {
+            return null;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String name : names) {
+                sb.append(name).append(',');
             }
             return sb.substring(0, sb.length() - 1);
         }
@@ -315,4 +367,5 @@ public class FeatureType extends AuditedModel implements Searchable {
     public void setVersion(int version) {
         this.version = version;
     }
+
 }
