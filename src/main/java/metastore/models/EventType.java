@@ -1,10 +1,12 @@
 package metastore.models;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import metastore.elasticsearch.Searchable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,13 +66,9 @@ public class EventType extends AuditedModel implements Searchable {
 
     private String timezone;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "event_types_datasets",
-//            joinColumns = @JoinColumn(name = "event_type_id"),
-//            inverseJoinColumns = @JoinColumn(name = "dataset_id")
-//    )
-//    private List<FileDataset> fileDatasets = new ArrayList<FileDataset>();
+    @ManyToMany(mappedBy = "eventTypes")
+    @JsonIgnore
+    private List<Dataset> datasets = new ArrayList<Dataset>();
 
     public Integer getId() {
         return id;
@@ -211,5 +209,20 @@ public class EventType extends AuditedModel implements Searchable {
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
+    }
+
+    public List<Dataset> getDatasets() {
+        return datasets;
+    }
+
+    public void setDatasets(List<Dataset> datasets) {
+        this.datasets = datasets;
+    }
+
+    public Long getPrimaryDatasetId() {
+        if (datasets.isEmpty()) {
+            return null;
+        }
+        return datasets.get(0).getId();
     }
 }

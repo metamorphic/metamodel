@@ -1,9 +1,12 @@
 package metastore.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import metastore.elasticsearch.Searchable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +25,9 @@ public class EventPropertyType extends AuditedModel implements Searchable {
     @Column(name = "property_type")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "value_type_id")
-    private ValueType valueType;
+//    @ManyToOne
+//    @JoinColumn(name = "value_type_id")
+//    private ValueType valueType;
 
     @ManyToOne
     @JoinColumn(name = "security_classification_id")
@@ -35,9 +38,9 @@ public class EventPropertyType extends AuditedModel implements Searchable {
     @Column(length = 8000)
     private String mappingExpression;
 
-    @ManyToMany(mappedBy = "eventPropertyTypes")
-    @JsonIgnore
-    private List<DataColumn> columns;
+    @ManyToMany(mappedBy = "eventPropertyTypes", cascade = CascadeType.PERSIST)
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private List<FileColumn> fileColumns = new ArrayList<FileColumn>();
 
     public Long getId() {
         return id;
@@ -55,18 +58,18 @@ public class EventPropertyType extends AuditedModel implements Searchable {
         this.name = name;
     }
 
-    public ValueType getValueType() {
-        return valueType;
-    }
+//    public ValueType getValueType() {
+//        return valueType;
+//    }
 
-    public void setValueType(ValueType valueType) {
-        this.valueType = valueType;
-    }
+//    public void setValueType(ValueType valueType) {
+//        this.valueType = valueType;
+//    }
 
-    public String getValueTypeName() {
-        if (valueType == null) return null;
-        return valueType.getName();
-    }
+//    public String getValueTypeName() {
+//        if (valueType == null) return null;
+//        return valueType.getName();
+//    }
 
     public SecurityClassification getSecurityClassification() {
         return securityClassification;
@@ -92,17 +95,29 @@ public class EventPropertyType extends AuditedModel implements Searchable {
         this.mappingExpression = mappingExpression;
     }
 
-    public List<DataColumn> getColumns() {
-        return columns;
+    public List<FileColumn> getFileColumns() {
+        return fileColumns;
     }
 
-    public void setColumns(List<DataColumn> columns) {
-        this.columns = columns;
+    public void setFileColumns(List<FileColumn> fileColumns) {
+        List<FileColumn> toRemove = new ArrayList<>(this.fileColumns);
+        for (FileColumn col : fileColumns) {
+            if (!col.getEventPropertyTypes().contains(this)) {
+                col.addEventPropertyType(this);
+            }
+            toRemove.remove(col);
+        }
+        for (FileColumn col : toRemove) {
+            if (col.getEventPropertyTypes() != null) {
+                col.getEventPropertyTypes().remove(this);
+            }
+        }
+        this.fileColumns = fileColumns;
     }
 
     public String getFirstDatasetName() {
-        if (columns == null || columns.isEmpty()) return null;
-        FileDataset fileDataset = ((FileColumn) columns.get(0)).getDataset();
+        if (fileColumns == null || fileColumns.isEmpty()) return null;
+        FileDataset fileDataset = (fileColumns.get(0)).getDataset();
         if (fileDataset == null) return null;
         return fileDataset.getName();
     }

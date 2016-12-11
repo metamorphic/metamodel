@@ -71,14 +71,6 @@ public abstract class DataColumn extends AuditedModel implements Searchable {
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
-            name = "event_property_types_columns", schema = "meta",
-            joinColumns = @JoinColumn(name = "column_id"),
-            inverseJoinColumns = @JoinColumn(name = "property_type_id")
-    )
-    private List<EventPropertyType> eventPropertyTypes = new ArrayList<EventPropertyType>();
-
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(
             name = "column_tags", schema = "meta",
             joinColumns = @JoinColumn(name = "column_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
@@ -247,61 +239,6 @@ public abstract class DataColumn extends AuditedModel implements Searchable {
 
     public void setIgnore(boolean ignore) {
         this.ignore = ignore;
-    }
-
-    public List<EventPropertyType> getEventPropertyTypes() {
-        return eventPropertyTypes;
-    }
-
-    public void setEventPropertyTypes(List<EventPropertyType> eventPropertyTypes) {
-        this.eventPropertyTypes = eventPropertyTypes;
-    }
-
-    public String getEventPropertyTypesId() {
-        if (eventPropertyTypes == null) {
-            return null;
-        }
-        int n = eventPropertyTypes.size();
-        String[] ids = new String[n];
-        for (int i = 0; i < n; i++) {
-            ids[i] = eventPropertyTypes.get(i).getId().toString();
-        }
-        if (n == 0) {
-            return null;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (String id : ids) {
-                sb.append(id).append(',');
-            }
-            return sb.substring(0, sb.length() - 1);
-        }
-    }
-
-    public String getEventPropertyTypesName() {
-        if (eventPropertyTypes == null) {
-            return null;
-        }
-        int n = eventPropertyTypes.size();
-        String[] names = new String[n];
-        for (int i = 0; i < n; i++) {
-            names[i] = eventPropertyTypes.get(i).getName();
-        }
-        if (n == 0) {
-            return null;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (String name : names) {
-                sb.append(name).append(',');
-            }
-            return sb.substring(0, sb.length() - 1);
-        }
-    }
-
-    public void addEventPropertyType(EventPropertyType eventPropertyType) {
-        if (eventPropertyTypes == null) {
-            eventPropertyTypes = new ArrayList<EventPropertyType>();
-        }
-        eventPropertyTypes.add(eventPropertyType);
     }
 
     public List<Tag> getTags() {
